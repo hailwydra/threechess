@@ -36,12 +36,9 @@ class Board:
         }
 
         #insted of hard coding all setups, setup one and rotate the board underneath
-        self.setup('1')
-        self.rotateboard120()
-        self.setup('2')
-        self.rotateboard120()
-        self.setup('3')
-        self.rotateboard120()
+        for i in range(3):    
+            self.setup(str(i+1))
+            self.rotateboard120()
 
     def getcor(self, i):
         return self.squares[i][:3]
