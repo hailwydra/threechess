@@ -18,7 +18,7 @@ class Piece:
 
     def __repr__(self):
         return f"[{self.pos}, {self.plyr}, {self.typ}, {self.prom}]"
-        # THIS UPDATE BETTER NOT GET LOST IN THE VOID THIS TIME
+        # Excellent...
 
 class Board:
     def __init__(self):
