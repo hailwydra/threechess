@@ -17,7 +17,7 @@ class Piece:
         self.prom = [promoted, '']
 
     def __repr__(self):
-        return "[{}, ({}, {}, {})]".format(self.pos, self.plyr, self.typ, self.prom)
+        return f"[{self.pos}, {self.plyr}, {self.typ}, {self.prom}]"
 
 class Board:
     def __init__(self):
