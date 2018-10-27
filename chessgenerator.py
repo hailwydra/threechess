@@ -1,14 +1,5 @@
 from matplotlib import pyplot as plt
 
-# TODO: make moves available to each player, rotate board + pieces func
-# Make knight_moves for unpromoted
-# impose restricitions on movement of bishop and rook if other pieces in the way
-
-# IDEA: could make rotateall120 a decorator with number of turns input and revert to original after
-
-# DEBUG: non-pawn pieces don't respond well to piece_moves, return only original position - SOLVED
-# Might be a problem with piece.plyr type (int or str) but might not be ... who knows
-
 class Piece:
     def __init__(self, position, player, type, promoted = False,):
         self.pos = position
@@ -17,7 +8,7 @@ class Piece:
         self.prom = [promoted, '']
 
     def __repr__(self):
-        return "[{}, ({}, {}, {})]".format(self.pos, self.plyr, self.typ, self.prom)
+        return f"[{self.pos}, {self.plyr}, {self.typ}, {self.prom}]"
 
 class Board:
     def __init__(self):
@@ -35,12 +26,9 @@ class Board:
         }
 
         #insted of hard coding all setups, setup one and rotate the board underneath
-        self.setup('1')
-        self.rotateboard120()
-        self.setup('2')
-        self.rotateboard120()
-        self.setup('3')
-        self.rotateboard120()
+        for i in range(3):    
+            self.setup(str(i+1))
+            self.rotateboard120()
 
     def getcor(self, i):
         return self.squares[i][:3]
