@@ -4,6 +4,8 @@
 - Make moves available to each player, rotate board + pieces func
 - Make knight_moves for unpromoted
 - Impose restricitions on movement of bishop and rook if other pieces in the way
+- Start on graphic capacilities (online)
+- Create/find graphics
 
 **IDEAS:**
 - Could make rotateall120 a decorator with number of turns input and revert to original after
