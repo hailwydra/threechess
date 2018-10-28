@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 
 class Piece:
-    def __init__(self, position, player, type, promoted = False,):
+    def __init__(self, position, player, typ, promoted = False):
         self.pos = position
         self.plyr = player
-        self.typ = type
+        self.typ = typ
         self.prom = [promoted, '']
 
     def __repr__(self):
