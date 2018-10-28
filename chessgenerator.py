@@ -24,8 +24,6 @@ class Board:
             '2': [],
             '3': []
         }
-
-        #insted of hard coding all setups, setup one and rotate the board underneath
         for i in range(3):    
             self.setup(str(i+1))
             self.rotateboard120()
@@ -111,14 +109,14 @@ class Board:
     def to2d(self):
         for i in range(127):
             self.squares[i].pop(2)
-        for i in [1,2,3]:
+        for i in ['1','2','3']:
             for j in range(15):
-                self.pieces[str(i)][j].pos.pop(2)
+                self.pieces[i][j].pos.pop(2)
 
 class Game:
     def __init__(self,players):
         self.board = Board()
-        self.players = {players[0]:'1', players[1]:'2', players[2]:'3'}
+        self.players = {'1':players[0], '2':players[1], '3':players[2]}
         self.captured = {'1':[],'2':[],'3':[]}
         self.turn = 1
     def move(self, player, frm, new):
@@ -179,6 +177,8 @@ class Game:
                                 pass
                             else:
                                 moves.append(move_by(current, by))
+            if current in moves:
+                moves.remove(current)
             if False in piece.prom:
                 for mv in moves:
                     if current[0] - mv[0] <= 0:
@@ -193,14 +193,15 @@ class Game:
                     for k in range(-6, 7):
                         if i + j + k == 0 and (i == k or j == i or k == j):
                             moves.append(move_by(current, [i,j,k]))
+            if current in moves:
+                moves.remove(current)
             for mv in moves:
-                exists = False
                 for pos in self.board.squares:
                     if mv == pos[:3]:
-                        exists = True
-                if not exists:
-                    moves.remove(mv)
-
+                        break
+                else:
+                    move.remove(mv)
+                    
             if False in piece.prom:
                 for mv in moves:
                     if mv[0] < current[0]:
@@ -236,15 +237,38 @@ class Game:
                 elif 'r' in piece.prom:
                     for i in range(1,7):
                         moves.append(move_by(list(piece.pos),[i,-i,0]))
+            
+            for mv in moves:
+                if self.board.contains(mv) != None:
+                    #find line (similar coordinate)
+                    line = None
+                    for i in range(3):
+                        if mv[i] == current[i]:
+                            line = i
+                            break
+                    diff = mv[(line + 1) % 3] - current[(line + 1) % 3]
+                    diff = int(diff/abs(diff))
+                    for i in range(mv[(line + 1) % 3], 7 * diff, diff):
+                        forbidden = [None,None,None]
+                        forbidden[line] = current[line]
+                        forbidden[(line + 1) % 3] = i
+                        forbidden[(line + 2) % 3] = -1 * (current[line] + 1)
+                        if forbidden in moves:
+                            moves.remove(forbidden)
+            if current in moves:
+                moves.remove(current)
             return moves
 
         def knight_moves(self, piece):
             current = list(piece.pos)
             moves = []
             if True in piece.prom:
+                #sorry about this - M
                 possibilities = [[1,2,-3],[2,1,-3],[3,-1,-2],[3,-2,-1],[2,-3,1],[1,-3,2],[-1,-2,3],[-2,-1,3],[-3,1,2],[-3,2,1],[-2,3,-1],[-1,3,-2]]
                 for i in possibilities:
                     moves.append(move_by(current, i))
+            if current in moves:
+                moves.remove(current)
             return moves
         movesdict = {
             'pawn': pawn_moves,
@@ -261,7 +285,7 @@ game = Game(['Gauss','Riemann','Euler'])
 def play_game():
     while not winner:
         player = str(game.turn((game.turn - 1) % 3 + 1))
-        print('{}\' move'.format(game.players.keys(int(player) - 1)))
+        print(f"{game.players[player]}\'s move")
         move = input('>>') # list(from, to)
         if player == '2':
             game.board.rotateall120()
@@ -273,7 +297,7 @@ def play_game():
             game.board.rotateall120()
             game.move(player, move[0], move[1])
             game.board.rotateall120()
-        game.turm += 1
+        game.turn += 1
 
 #move tests
 game.move('1', [-5,-1,6], [-4,-2,6])
