@@ -150,7 +150,7 @@ class Game:
     #calculating the possible moves a piece can have
     def piece_moves(self, piece):
         def move_by(frm, by):
-            temp = frm
+            temp = list(frm)
             for i in range(3):
                 temp[i] = by[i] + frm[i]
             return temp
@@ -173,15 +173,13 @@ class Game:
                     for k in [-2,-1,0,1,2]:
                         by = [i, j, k]
                         if i+j+k == 0:
-                            if -2 in by and 2 in by and 0 in by:
-                                pass
-                            else:
+                            if not(-2 in by and 2 in by and 0 in by):
                                 moves.append(move_by(current, by))
             if current in moves:
                 moves.remove(current)
             if False in piece.prom:
                 for mv in moves:
-                    if current[0] - mv[0] <= 0:
+                    if current[0] - mv[0] >= 0:
                         moves.remove(mv)
             return moves
 
