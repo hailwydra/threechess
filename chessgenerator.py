@@ -126,6 +126,7 @@ class Game:
         self.players = {'1':players[0], '2':players[1], '3':players[2]}
         self.captured = {'1':[],'2':[],'3':[]}
         self.turn = 1
+        self.winner = ""
     def move(self, player, frm, new):
         allowed = True
         capture = False
@@ -285,26 +286,31 @@ class Game:
         return movesdict[piece.typ](self,piece)
 
 
-game = Game(['Gauss','Riemann','Euler'])
 #theoretical game // semi pseudo
-def play_game():
-    while not winner:
-        player = str(game.turn((game.turn - 1) % 3 + 1))
+def play_game(player_list):
+    game = Game(player_list)
+    while not game.winner:
+        player = str(((game.turn - 1) % 3 + 1))
         print(f"{game.players[player]}\'s move")
-        move = input('>>') # list(from, to)
-        for plyr in range(1,4):
-            game.board.rotate120(str(plyr, game.board.moves, True, plyr, move[0], move[1]))
+        frm = input('From >>')
+        new = input('To >>')
+        game.board.rotate120(str(player), game.move, True, player, frm, new)
         game.turn += 1
+        #show
+        game.board.to2d()
+        showboard(game.board.squares)
+        showpieces(game.board.pieces)
+        plt.xlim(-6.5,6.5)
+        plt.show()
 
 #move tests
-game.move('1', [-5,-1,6], [-4,-2,6])
-game.move('1', [-5,0,5], [-4,-1,5])
-game.move('1', [-6,3,3], [-4,2,2])
+#game.move('1', [-5,-1,6], [-4,-2,6])
+#game.move('1', [-5,0,5], [-4,-1,5])
+#game.move('1', [-6,3,3], [-4,2,2])
 
 #for visual repr on pyplot
 sc = 0.86603
-def showboard():
-    space = game.board.squares
+def showboard(space):
     x = []
     y = []
     c = []
@@ -318,23 +324,18 @@ def showboard():
         elif i[2] == 'w':
             c.append('xkcd:beige')
     plt.scatter(x,y, 1200, c = c, marker = 'H')
-def showpieces():
-    p = game.board.pieces
+def showpieces(p):
     for i in range(15):
-        a = game.board.pieces['1'][i].pos[0]
-        b = game.board.pieces['1'][i].pos[1] + 0.5 * a
+        a = p['1'][i].pos[0]
+        b = p['1'][i].pos[1] + 0.5 * a
         plt.scatter(a * sc,b,c="r")
     for i in range(15):
-        a = game.board.pieces['2'][i].pos[0]
-        b = game.board.pieces['2'][i].pos[1] + 0.5 * a
+        a = p['2'][i].pos[0]
+        b = p['2'][i].pos[1] + 0.5 * a
         plt.scatter(a * sc, b,c="g")
     for i in range(15):
-        a = game.board.pieces['3'][i].pos[0]
-        b = game.board.pieces['3'][i].pos[1] + 0.5 * a
+        a = p['3'][i].pos[0]
+        b = p['3'][i].pos[1] + 0.5 * a
         plt.scatter(a * sc,b,c="y")
 
-game.board.to2d()
-showboard()
-showpieces()
-plt.xlim(-6.5,6.5)
-plt.show()
+play_game(['Gauss','Riemann','Euler'])
