@@ -24,9 +24,9 @@ class Board:
             '2': [],
             '3': []
         }
-        for i in range(3):    
-            self.setup(str(i+1))
-            self.rotateboard120()
+        for i in range(1,4):
+            plyr = str(i)
+            self.rotate120(plyr, self.setup, False, plyr)
 
     def getcor(self, i):
         return self.squares[i][:3]
@@ -57,19 +57,26 @@ class Board:
         for i in range(127):
             self.squares[i].append(c_list[i])
 
-    #rotate only board
-    def rotateboard120(self):
-        for i in range(127):
-            x, y, z = self.squares[i][0], self.squares[i][1], self.squares[i][2]
-            self.squares[i][0], self.squares[i][1], self.squares[i][2] = y, z ,x
-
-    #rotate board and pieces
-    def rotateall120(self):
-        self.rotateboard120()
-        for i in range(1,4):
-            for j in range(len(self.pieces[str(i)])):
-                x, y, z = self.pieces[str(i)][j].pos[0], self.pieces[str(i)][j].pos[1], self.pieces[str(i)][j].pos[2]
-                self.pieces[str(i)][j].pos[0], self.pieces[str(i)][j].pos[1], self.pieces[str(i)][j].pos[2] = y, z ,x
+    #general rotation - for only board tiles set all to False
+    def rotate120(self, player, func, all = True, *args, **kwargs):
+        if all:
+            for i in range(127):
+                x, y, z = self.squares[i][0], self.squares[i][1], self.squares[i][2]
+                self.squares[i][0], self.squares[i][1], self.squares[i][2] = y, z ,x
+            for i in range(1,4):
+                for j in range(len(self.pieces[str(i)])):
+                    x, y, z = self.pieces[str(i)][j].pos[0], self.pieces[str(i)][j].pos[1], self.pieces[str(i)][j].pos[2]
+                    self.pieces[str(i)][j].pos[0], self.pieces[str(i)][j].pos[1], self.pieces[str(i)][j].pos[2] = y, z ,x
+        elif not all:
+            def rotate():
+                for i in range(127):
+                    x, y, z = self.squares[i][0], self.squares[i][1], self.squares[i][2]
+                    self.squares[i][0], self.squares[i][1], self.squares[i][2] = y, z ,x
+        for i in range(int(player) - 1):
+            rotate()
+        func(*args, **kwargs)
+        for i in range(4 - int(player)):
+            rotate()
 
     def setup(self, player):
         front_row = ['rook', 'knight', 'bishop', 'king', 'bishop', 'knight', 'rook']
@@ -199,7 +206,7 @@ class Game:
                         break
                 else:
                     move.remove(mv)
-                    
+
             if False in piece.prom:
                 for mv in moves:
                     if mv[0] < current[0]:
@@ -235,7 +242,7 @@ class Game:
                 elif 'r' in piece.prom:
                     for i in range(1,7):
                         moves.append(move_by(list(piece.pos),[i,-i,0]))
-            
+
             for mv in moves:
                 if self.board.contains(mv) != None:
                     #find line (similar coordinate)
@@ -285,16 +292,8 @@ def play_game():
         player = str(game.turn((game.turn - 1) % 3 + 1))
         print(f"{game.players[player]}\'s move")
         move = input('>>') # list(from, to)
-        if player == '2':
-            game.board.rotateall120()
-            game.move(player, move[0], move[1])
-            game.board.rotateall120()
-            game.board.rotateall120()
-        elif player == '3':
-            game.board.rotateall120()
-            game.board.rotateall120()
-            game.move(player, move[0], move[1])
-            game.board.rotateall120()
+        for plyr in range(1,4):
+            game.board.rotate120(str(plyr, game.board.moves, True, plyr, move[0], move[1]))
         game.turn += 1
 
 #move tests
