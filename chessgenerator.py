@@ -132,7 +132,8 @@ class Game:
         capture = False
         frmpiece = self.board.contains(frm)
         newpiece = self.board.contains(new)
-        playerpieces = list(self.board.pieces[player])
+        playerpieces = self.board.pieces[player][:]
+        print(playerpieces)
         #new exists in board
         for sq in self.board.squares:
             if new == sq[:3]:
@@ -153,7 +154,7 @@ class Game:
                 cap_piece = newpiece
                 self.captured[player].append(cap_piece)
                 self.board.pieces[cap_piece.plyr].remove(cap_piece)
-            self.board.pieces[player][playerpieces.index(frmpiece)].pos = new
+            self.board.pieces[player][self.board.pieces[player].index(frmpiece)].pos = new
 
     #calculating the possible moves a piece can have
     def piece_moves(self, piece):
@@ -289,11 +290,14 @@ class Game:
 #theoretical game // semi pseudo
 def play_game(player_list):
     game = Game(player_list)
+    print("Input coordinates as comma-seperated integers")
     while not game.winner:
         player = str(((game.turn - 1) % 3 + 1))
-        print(f"{game.players[player]}\'s move")
-        frm = input('From >>')
-        new = input('To >>')
+        print(f"{game.players[player]}\'s move - player {player}")
+        frm = input('From >> ').split(",")
+        frm = [int(x) for x in frm]
+        new = input('To >> ').split(",")
+        new = [int(x) for x in new]
         game.board.rotate120(str(player), game.move, True, player, frm, new)
         game.turn += 1
         #show
